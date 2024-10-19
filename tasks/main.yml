@@ -1,0 +1,38 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+
+- name: Autoremove unused packages
+  become: true
+  apt:
+    autoremove: yes
+  register: autoremove_output
+  changed_when: "'0 upgraded' not in autoremove_output.stdout"
+  tags:
+    - apt
+    - autoremove
+
+- name: Install basic needed packages
+  become: true
+  apt:
+    name: ["aptitude", "python3"]
+    update_cache: yes
+    state: present
+  tags:
+    - apt
+    - updatecache
+
+- name: Update all packages to the latest version
+  become: true
+  apt:
+    upgrade: dist
+  tags:
+    - apt
+    - upgrade
+
+- name: Auto Clean the upgrade utility
+  become: true
+  command: apt -y autoclean
+  when: true
+  tags:
+    - apt
+    - autoclean
